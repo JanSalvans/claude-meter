@@ -1,7 +1,7 @@
 <h1 align="center">Claude Meter</h1>
 
 <p align="center">
-  El teu ús de Claude a la barra de menú de macOS, com si fos la bateria.<br>
+  El teu ús de Claude a la barra de menú de macOS, amb una barra de color.<br>
   <a href="#english">English below</a>
 </p>
 
@@ -14,13 +14,13 @@ Per saber quants crèdits et queden a Claude has d'obrir Claude Code i escriure 
 Claude Meter posa aquest número a la barra de menú, al costat de la bateria i el wifi:
 
 ```
-🔋 43%
+▰▰▱ 43%
 ```
 
-El percentatge és el de la finestra de sessió (5 h). En clicar-hi s'obre el detall:
+La barra i el percentatge són els de la finestra de sessió (5 h). La barra canvia de color amb l'ús: verd, groc, taronja i vermell. En clicar-hi s'obre el detall:
 
-- **sessió**: percentatge, barra i hora de reinici
-- **setmana**: percentatge, barra i dia de reinici
+- **sessió**: percentatge, barra, dia i hora del restabliment i quant falta ("es restableix demà a la 1.00 h, falten 4 h 13 min")
+- **setmana**: el mateix per a la finestra de 7 dies
 - **setmana, opus**: només si el teu pla en té una de separada
 - origen de les dades i quan es van llegir
 
@@ -76,7 +76,7 @@ Per provar els avisos sense esperar cinc hores:
 | carpeta | què hi ha |
 |---|---|
 | `Sources/ClaudeMeterCore/Usage` | clauer, client de l'endpoint, estimador local i poller |
-| `Sources/ClaudeMeterCore/UI` | icona de bateria, barra de menú, desplegable i preferències |
+| `Sources/ClaudeMeterCore/UI` | barra d'ús, barra de menú, desplegable i preferències |
 | `Sources/ClaudeMeterCore/Notifications` | llindars del 25, 50 i 75 % |
 | `Sources/ClaudeMeter` | arrencada i cablejat |
 | `Scripts` | compilació, proves i sonda de l'endpoint |
@@ -102,10 +102,10 @@ To check how much Claude usage you have left, you have to open Claude Code and t
 Claude Meter puts that number in the macOS menu bar, next to the battery and the wifi:
 
 ```
-🔋 43%
+▰▰▱ 43%
 ```
 
-The percentage is your session window (5 h). Click it for the breakdown: session, week, and the separate Opus weekly window if your plan has one, each with a progress bar and a reset time.
+The bar and the percentage show your session window (5 h), and the bar turns green, yellow, orange and red as you use it. Click it for the breakdown: session, week, and the separate Opus weekly window if your plan has one, each with a progress bar, the day and time it resets, and how long is left.
 
 It also sends a system notification when you cross **25 %, 50 % and 75 %** of the session window. Each threshold fires once per window and re-arms itself when the window resets. If you are already past a threshold when the app starts, you will not get a backlog of stale alerts.
 

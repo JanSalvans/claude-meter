@@ -33,6 +33,24 @@ struct UsagePayloadParserTests {
         #expect(snapshot?.session?.resetsAt == ISO8601DateFormatter().date(from: "2023-11-14T23:00:00Z"))
     }
 
+    @Test("forma real de l'endpoint: percentatge i hora amb microsegons")
+    func realShape() throws {
+        let snapshot = try parse("""
+        {
+          "five_hour": { "utilization": 49.0, "resets_at": "2026-09-27T00:59:59.842976+00:00" },
+          "seven_day": { "utilization": 44.0, "resets_at": "2026-09-27T18:59:59.842993+00:00" },
+          "seven_day_opus": null,
+          "nimbus_quill": { "utilization": 0.0, "resets_at": null },
+          "limits": [ { "kind": "session", "group": "session" } ]
+        }
+        """)
+        #expect(snapshot?.session?.percent == 49)
+        #expect(snapshot?.week?.percent == 44)
+        let sessionReset = try #require(snapshot?.session?.resetsAt)
+        #expect(abs(sessionReset.timeIntervalSince1970 - 1_790_470_799.84) < 1)
+        #expect(snapshot?.week?.resetsAt != nil)
+    }
+
     @Test("camelCase amb percentatge i epoch")
     func camelCase() throws {
         let snapshot = try parse("""

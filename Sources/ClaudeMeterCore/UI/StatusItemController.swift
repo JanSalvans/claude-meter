@@ -1,11 +1,11 @@
 import AppKit
 
-/// Gestiona l'NSStatusItem de la barra de menú: icona de bateria + percentatge de sessió.
+/// Gestiona l'NSStatusItem de la barra de menú: barra d'ús + percentatge de sessió.
 @MainActor
 public final class StatusItemController: NSObject, UsageObserver, NSMenuDelegate {
 
     private let statusItem: NSStatusItem
-    private let renderer: BatteryIconRenderer
+    private let renderer: UsageBarRenderer
     private var latestSnapshot: UsageSnapshot?
     private var appearanceObservation: NSKeyValueObservation?
 
@@ -15,7 +15,7 @@ public final class StatusItemController: NSObject, UsageObserver, NSMenuDelegate
 
     public var button: NSStatusBarButton? { statusItem.button }
 
-    public init(renderer: BatteryIconRenderer) {
+    public init(renderer: UsageBarRenderer) {
         self.statusItem = NSStatusBar.system.statusItem(withLength: NSStatusItem.variableLength)
         self.renderer = renderer
         super.init()
