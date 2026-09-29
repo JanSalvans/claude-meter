@@ -1,0 +1,30 @@
+# Publica el zip de l'app a la Release quan es puja una etiqueta vX.Y.Z.
+# Ús: git tag v1.2.0 && git push origin v1.2.0
+name: Release
+
+on:
+  push:
+    tags: ["v*"]
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Empaqueta l'app universal
+        run: ./Scripts/package.sh
+
+      - name: Puja el zip a la Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ github.ref_name }}
+        run: |
+          if gh release view "$TAG" >/dev/null 2>&1; then
+            gh release upload "$TAG" dist/*.zip --clobber
+          else
+            gh release create "$TAG" dist/*.zip --title "Claude Meter ${TAG#v}" --notes "Vegeu CHANGELOG.md."
+          fi

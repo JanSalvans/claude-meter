@@ -36,9 +36,23 @@ Si l'endpoint no respon o el token ha caducat, l'app cau a una **estimació loca
 
 - macOS 13 o superior
 - Claude Code instal·lat i amb la sessió iniciada (és d'on surt el token)
-- Swift 6 de les Command Line Tools de Xcode. **No cal Xcode**
+- Per compilar-la tu: Swift 6 de les Command Line Tools de Xcode. **No cal Xcode**
 
 ## Instal·lació
+
+1. Descarrega **`Claude-Meter-x.y.z.zip`** de la [darrera versió](https://github.com/JanSalvans/claude-meter/releases/latest). Funciona als Mac amb Apple Silicon i amb Intel.
+2. Obre el zip i arrossega **Claude Meter** a la carpeta **Aplicacions**.
+3. Obre-la. Com que l'app no està notaritzada per Apple (és un projecte personal i gratuït), macOS no la deixarà obrir el primer cop. Ves a **Configuració del Sistema › Privacitat i seguretat**, baixa fins a l'avís de Claude Meter i clica **Obre igualment**. Només cal fer-ho una vegada.
+
+   Si prefereixes el Terminal, això fa el mateix:
+
+   ```bash
+   xattr -dr com.apple.quarantine "/Applications/Claude Meter.app"
+   ```
+
+La barra apareix a dalt a la dreta, a la barra de menú. L'app no surt al Dock.
+
+### Compilar-la tu
 
 ```bash
 git clone https://github.com/JanSalvans/claude-meter.git
@@ -46,9 +60,11 @@ cd claude-meter
 ./Scripts/bundle.sh --open
 ```
 
-L'script compila, munta `Claude Meter.app`, la signa amb identitat ad hoc i la instal·la a `~/Applications`.
+L'script compila, munta `Claude Meter.app`, la signa amb identitat ad hoc i la instal·la a `~/Applications`. `./Scripts/package.sh` fa el zip universal que es publica a les versions.
 
-El primer cop macOS et demanarà dues coses:
+### El primer cop
+
+macOS et demanarà dues coses:
 
 1. **Accés al clauer**, per llegir la credencial de Claude Code. Tria "Permet sempre" o t'ho preguntarà a cada consulta.
 2. **Permís de notificacions**, per als avisos del 25, 50 i 75 %.
@@ -117,9 +133,21 @@ If the endpoint fails or the token has expired, the app falls back to a **local 
 
 ### Requirements
 
-macOS 13+, Claude Code installed and signed in, and Swift 6 from the Xcode Command Line Tools. Xcode itself is not required.
+macOS 13+ and Claude Code installed and signed in. To build it yourself you also need Swift 6 from the Xcode Command Line Tools (Xcode itself is not required).
 
 ### Install
+
+1. Download **`Claude-Meter-x.y.z.zip`** from the [latest release](https://github.com/JanSalvans/claude-meter/releases/latest). It runs on both Apple Silicon and Intel Macs.
+2. Unzip it and drag **Claude Meter** into **Applications**.
+3. Open it. The app is not notarized by Apple (it's a free personal project), so macOS blocks it the first time. Go to **System Settings › Privacy & Security**, scroll to the Claude Meter notice and click **Open Anyway**. You only need to do this once.
+
+   Or, from the Terminal:
+
+   ```bash
+   xattr -dr com.apple.quarantine "/Applications/Claude Meter.app"
+   ```
+
+To build it yourself:
 
 ```bash
 git clone https://github.com/JanSalvans/claude-meter.git
