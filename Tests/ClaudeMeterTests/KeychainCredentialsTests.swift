@@ -65,4 +65,26 @@ struct KeychainCredentialsTests {
         let credentials = try KeychainCredentials.parse(Data(#"{"accessToken":"sk-secret"}"#.utf8), now: now)
         #expect(credentials.description.contains("sk-secret") == false)
     }
+
+    @Test func rawDataLlegeixLaSortidaDeSecurity() throws {
+        var received: [String] = []
+        let data = try KeychainCredentials.rawData(service: "svc") { arguments in
+            received = arguments
+            return .init(status: 0, output: Data("{\"accessToken\":\"x\"}\n".utf8))
+        }
+        #expect(received == ["find-generic-password", "-s", "svc", "-w"])
+        #expect(String(decoding: data, as: UTF8.self) == #"{"accessToken":"x"}"#)
+    }
+
+    @Test func rawDataTraduEisCodisDeSortida() {
+        #expect(throws: CredentialsError.notFound) {
+            _ = try KeychainCredentials.rawData(service: "svc") { _ in .init(status: 44, output: Data()) }
+        }
+        #expect(throws: CredentialsError.keychain(51)) {
+            _ = try KeychainCredentials.rawData(service: "svc") { _ in .init(status: 51, output: Data()) }
+        }
+        #expect(throws: CredentialsError.malformed("entrada buida")) {
+            _ = try KeychainCredentials.rawData(service: "svc") { _ in .init(status: 0, output: Data("\n".utf8)) }
+        }
+    }
 }

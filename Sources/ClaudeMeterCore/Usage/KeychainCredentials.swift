@@ -58,27 +58,57 @@ public enum KeychainCredentials {
         return try parse(data)
     }
 
+    /// Resultat d'executar l'eina `security`: codi de sortida i sortida estàndard.
+    public struct CommandResult: Sendable {
+        public let status: Int32
+        public let output: Data
+
+        public init(status: Int32, output: Data) {
+            self.status = status
+            self.output = output
+        }
+    }
+
     /// Dades crues del clauer, sense interpretar.
-    public static func rawData(service: String) throws -> Data {
-        let query: [String: Any] = [
-            kSecClass as String: kSecClassGenericPassword,
-            kSecAttrService as String: service,
-            kSecReturnData as String: true,
-            kSecMatchLimit as String: kSecMatchLimitOne
-        ]
-        var item: CFTypeRef?
-        let status = SecItemCopyMatching(query as CFDictionary, &item)
-        switch status {
-        case errSecSuccess:
-            guard let data = item as? Data, !data.isEmpty else {
-                throw CredentialsError.malformed("entrada buida")
-            }
-            return data
-        case errSecItemNotFound:
+    ///
+    /// Es llegeix amb `/usr/bin/security` i no amb `SecItemCopyMatching`: l'element és de Claude Code
+    /// i `security` ja hi és de confiança, així que no surt cap avís. Amb l'API directa, el permís
+    /// «Permet sempre» es perd a cada recompilació (signatura ad hoc) i quan Claude Code renova el token.
+    public static func rawData(
+        service: String,
+        run: (_ arguments: [String]) throws -> CommandResult = KeychainCredentials.runSecurity
+    ) throws -> Data {
+        let result: CommandResult
+        do {
+            result = try run(["find-generic-password", "-s", service, "-w"])
+        } catch {
+            throw CredentialsError.keychain(errSecInternalError)
+        }
+        switch result.status {
+        case 0:
+            let text = String(decoding: result.output, as: UTF8.self)
+                .trimmingCharacters(in: .whitespacesAndNewlines)
+            guard !text.isEmpty else { throw CredentialsError.malformed("entrada buida") }
+            return Data(text.utf8)
+        case 44:
+            // Codi de sortida de `security` quan l'element no existeix.
             throw CredentialsError.notFound
         default:
-            throw CredentialsError.keychain(status)
+            throw CredentialsError.keychain(OSStatus(result.status))
         }
+    }
+
+    public static func runSecurity(arguments: [String]) throws -> CommandResult {
+        let process = Process()
+        process.executableURL = URL(fileURLWithPath: "/usr/bin/security")
+        process.arguments = arguments
+        let pipe = Pipe()
+        process.standardOutput = pipe
+        process.standardError = FileHandle.nullDevice
+        try process.run()
+        let output = pipe.fileHandleForReading.readDataToEndOfFile()
+        process.waitUntilExit()
+        return CommandResult(status: process.terminationStatus, output: output)
     }
 
     /// Interpreta el JSON de la credencial. Separat de la lectura perquè es pugui provar sense clauer.

@@ -2,6 +2,16 @@
 
 La més nova a dalt. Newest first.
 
+## 1.1.1 · 08/10/2026
+
+**Català**
+
+- Corregit: l'app ja no demana la contrasenya del clauer cada dos per tres. Ara llegeix la credencial amb l'eina `security` del sistema, que no perd el permís en recompilar l'app ni quan Claude Code renova el token.
+
+**English**
+
+- Fixed: the app no longer keeps asking for the keychain password. It now reads the credential through the system `security` tool, which does not lose its permission when the app is rebuilt or when Claude Code refreshes the token.
+
 ## 1.1.0 · 26/09/2026
 
 **Català**
